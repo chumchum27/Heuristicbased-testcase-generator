@@ -37,6 +37,7 @@ Live progress bar: Tracks scan → extract → generate phases
 Breakdown chart: Count by test type (Functionality / UI / Functionality+UI)
 Preview table: Shows first 5 generated cases inline
 CSV export: BOM-prefixed UTF-8 CSV, filename auto-derived from domain_pageType_date.csv
+
 📊 CSV Output Columns
 Column	Description
 Module/ Sub Module	Page type + form/section name
@@ -50,31 +51,24 @@ Pre-Condition	State before test starts
 Steps	Numbered step-by-step instructions
 Expected Result	Pass criterion
 Post Conditions	State after test completes
+
 💡 Usage Tips
 Login pages → Best results; generates required field, email format, and auth flow tests
 Complex forms → Every field gets its own happy path + validation test
 SPAs (React/Vue) → Click "Generate" after the page fully loads and renders all elements
 Toggle scopes → Uncheck "Performance" or "Accessibility" to generate a focused functional-only run
 Re-run anytime → Click Generate again on a different page to overwrite results
+
 🔒 Permissions Used
 Permission	Reason
 activeTab	Read the current tab's URL and inject scripts
 scripting	Inject content.js into live pages
 storage	Reserved for future settings persistence
 host_permissions: <all_urls>	Allow scanning on any site
+
 🗂️ Example Generated Test Cases
 For a Login page with email + password fields:
-
 Case ID	Type	Title
 TC-0001	Functionality	Verify "Email" accepts valid input
 TC-0002	Functionality	Verify "Email" shows error when left empty
-TC-0003	Functionality	Verify "Email" rejects invalid email format
-TC-0004	UI	Verify "Email" label and placeholder are visible
-TC-0005	Functionality	Verify "Password" accepts valid input
-TC-0006	Functionality	Verify Login Form submits successfully with all valid data
-TC-0007	Functionality	Verify Login Form blocks submission when empty
-TC-0008	Functionality/UI	Verify login loading state shown during submission
-TC-0009	Functionality/UI	Verify all interactive elements are keyboard navigable
-TC-0010	UI	Verify WCAG 2.1 AA color contrast
-TC-0011	Functionality	Verify page loads within acceptable time
-TC-0012	Functionality/UI	Verify page renders correctly across all browsers
+

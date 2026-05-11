@@ -1,18 +1,6 @@
 TestCraft AI – Chrome Extension Walkthrough
 A Manifest V3 Chrome Extension that scans any live webpage and auto-generates a comprehensive, export-ready QA test case matrix.
 
-📁 Project Structure
-test/
-├── manifest.json       ← MV3 config, permissions, service worker declaration
-├── background.js       ← Test case generation engine (service worker)
-├── content.js          ← DOM parser / page metadata extractor
-├── popup.html          ← Extension UI (dark-mode, glassmorphism)
-├── popup.js            ← UI controller, CSV export
-└── icons/
-    ├── icon16.png
-    ├── icon32.png
-    ├── icon48.png
-    └── icon128.png
 🚀 How to Install
 Open Chrome and go to chrome://extensions
 Enable Developer Mode (toggle, top-right)

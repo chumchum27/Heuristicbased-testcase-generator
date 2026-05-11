@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TestCraft AI – Test Case Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0d0f1a;
+      --bg-secondary: #131626;
+      --bg-card: #1a1d30;
+      --bg-glass: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --border-active: rgba(99,102,241,0.5);
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99,102,241,0.25);
+      --success: #10b981;
+      --success-light: rgba(16,185,129,0.15);
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #4b5563;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+      --transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      width: 420px;
+      min-height: 580px;
+      max-height: 700px;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: linear-gradient(135deg, #1e1b4b 0%, #131626 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 20px 16px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 16px rgba(99,102,241,0.4);
+      flex-shrink: 0;
+    }
+
+    .logo-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      background: linear-gradient(90deg, #f1f5f9, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .badge {
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .header-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-left: 42px;
+    }
+
+    /* ===== PAGE META ===== */
+    .page-meta {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .meta-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .meta-dot.active { background: var(--success); box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+
+    .meta-text {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main {
+      flex: 1;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    /* custom scrollbar */
+    .main::-webkit-scrollbar { width: 4px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ===== STATS ROW ===== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 10px 8px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover { border-color: var(--border-active); }
+
+    .stat-num {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-light), #c4b5fd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 3px;
+    }
+
+    /* ===== SECTION LABEL ===== */
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    /* ===== SCOPE CHECKBOXES ===== */
+    .scope-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .scope-item {
+      position: relative;
+    }
+
+    .scope-item input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+    }
+
+    .scope-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 10px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .scope-item input:checked + .scope-label {
+      border-color: var(--border-active);
+      background: rgba(99,102,241,0.08);
+    }
+
+    .scope-check {
+      width: 14px; height: 14px;
+      border: 1.5px solid var(--text-muted);
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .scope-item input:checked + .scope-label .scope-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .scope-item input:checked + .scope-label .scope-check::after {
+      content: '✓';
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .scope-text { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
+
+    /* ===== STATUS / PROGRESS AREA ===== */
+    .status-area {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .status-area.visible { display: flex; }
+
+    .status-icon {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .status-icon.scanning { background: rgba(99,102,241,0.15); animation: pulse 1.5s infinite; }
+    .status-icon.success { background: var(--success-light); }
+    .status-icon.error { background: rgba(239,68,68,0.1); }
+
+    .status-content { flex: 1; min-width: 0; }
+
+    .status-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .status-detail {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .progress-bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    /* ===== RESULTS BREAKDOWN ===== */
+    .breakdown {
+      display: none;
+      gap: 6px;
+      flex-direction: column;
+    }
+
+    .breakdown.visible { display: flex; }
+
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .breakdown-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .type-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+
+    .type-dot.func { background: #6366f1; }
+    .type-dot.ui { background: #a78bfa; }
+    .type-dot.both { background: #10b981; }
+    .type-dot.neg { background: #ef4444; }
+
+    .type-name { font-size: 0.75rem; color: var(--text-secondary); }
+
+    .type-count {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 7px;
+      min-width: 32px;
+      text-align: center;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+      grid-column: 1 / -1;
+    }
+
+    .btn-primary:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(99,102,241,0.5);
+    }
+
+    .btn-primary:not(:disabled):active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: var(--bg-glass);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:not(:disabled):hover {
+      border-color: var(--border-active);
+      color: var(--text-primary);
+      background: rgba(99,102,241,0.07);
+    }
+
+    .btn-download {
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+
+    .btn-download:not(:disabled):hover {
+      background: rgba(16,185,129,0.2);
+      transform: translateY(-1px);
+    }
+
+    /* spinner inside button */
+    .btn-spinner {
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    /* ===== PREVIEW TABLE ===== */
+    .preview-wrap {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .preview-wrap.visible { display: block; }
+
+    .preview-header {
+      background: var(--bg-secondary);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .preview-scroll {
+      overflow-x: auto;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .preview-scroll::-webkit-scrollbar { height: 4px; width: 4px; }
+    .preview-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.68rem;
+    }
+
+    th {
+      position: sticky; top: 0;
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      padding: 6px 10px;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.62rem;
+    }
+
+    td {
+      padding: 6px 10px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+    tr:hover td { background: rgba(99,102,241,0.04); }
+
+    .badge-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-type.func { background: rgba(99,102,241,0.15); color: var(--accent-light); }
+    .badge-type.ui { background: rgba(167,139,250,0.15); color: #c4b5fd; }
+    .badge-type.both { background: var(--success-light); color: var(--success); }
+    .badge-type.neg { background: rgba(239,68,68,0.12); color: #f87171; }
+    .badge-type.api { background: rgba(245,158,11,0.12); color: #fbbf24; }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .footer-tag {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .footer-tag span {
+      color: var(--accent-light);
+      font-weight: 600;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in { animation: fadeIn 0.3s ease forwards; }
+
+    /* ripple */
+    .btn::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transform: scale(0);
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .btn:active::after {
+      width: 200%;
+      height: 200%;
+      top: -50%; left: -50%;
+      transform: scale(1);
+      opacity: 1;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-row">
+      <div class="logo-icon">🧪</div>
+      <span class="logo-title">TestCraft AI</span>
+      <span class="badge">Pro</span>
+    </div>
+    <p class="header-subtitle">Intelligent Test Case Generator for QA Teams</p>
+  </header>
+
+  <!-- PAGE META -->
+  <div class="page-meta" id="pageMeta">
+    <div class="meta-dot" id="metaDot"></div>
+    <span class="meta-text" id="metaUrl">Loading page info…</span>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <div class="stat-num" id="statForms">0</div>
+        <div class="stat-label">Forms</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statInputs">0</div>
+        <div class="stat-label">Inputs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statButtons">0</div>
+        <div class="stat-label">Buttons</div>
+      </div>
+    </div>
+
+    <!-- SCOPE SELECTOR -->
+    <div>
+      <div class="section-label" style="margin-bottom:6px;">Test Scope</div>
+      <div class="scope-grid">
+        <div class="scope-item">
+          <input type="checkbox" id="scope-func" checked />
+          <label class="scope-label" for="scope-func">
+            <span class="scope-check"></span>
+            <span class="scope-text">Functionality</span>
+          </label>
+        </div>
+        <div class="scope-item">
+          <input type="checkbox" id="scope-ui" checked />
+          <label class="scope-label" for="scope-ui">
+            <span class="scope-check"></span>
+            <span class="scope-text">UI Tests</span>
+          </label>
+        </div>
+        <div class="scope-item">
+          <input type="checkbox" id="scope-access" checked />
+          <label class="scope-label" for="scope-access">
+            <span class="scope-check"></span>
+            <span class="scope-text">Accessibility</span>
+          </label>
+        </div>
+        <div class="scope-item">
+          <input type="checkbox" id="scope-perf" checked />
+          <label class="scope-label" for="scope-perf">
+            <span class="scope-check"></span>
+            <span class="scope-text">Performance</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATUS AREA -->
+    <div class="status-area" id="statusArea">
+      <div class="status-icon" id="statusIcon">⚡</div>
+      <div class="status-content">
+        <div class="status-title" id="statusTitle">Ready</div>
+        <div class="status-detail" id="statusDetail">Click "Generate Test Cases" to start</div>
+        <div class="progress-bar-wrap" id="progressWrap" style="display:none">
+          <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BREAKDOWN -->
+    <div class="breakdown" id="breakdown">
+      <div class="section-label" style="margin-bottom:2px;">Results Breakdown</div>
+      <div class="breakdown-row">
+        <div class="breakdown-left">
+          <div class="type-dot func"></div>
+          <span class="type-name">Functionality</span>
+        </div>
+        <span class="type-count" id="countFunc">0</span>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-left">
+          <div class="type-dot ui"></div>
+          <span class="type-name">UI</span>
+        </div>
+        <span class="type-count" id="countUi">0</span>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-left">
+          <div class="type-dot both"></div>
+          <span class="type-name">Functionality/UI</span>
+        </div>
+        <span class="type-count" id="countBoth">0</span>
+      </div>
+      <div class="breakdown-row">
+        <div class="breakdown-left">
+          <div class="type-dot neg"></div>
+          <span class="type-name">Negative</span>
+        </div>
+        <span class="type-count" id="countNeg">0</span>
+      </div>
+    </div>
+
+    <!-- PREVIEW TABLE -->
+    <div class="preview-wrap" id="previewWrap">
+      <div class="preview-header">
+        <span class="preview-title">Preview (first 5 cases)</span>
+      </div>
+      <div class="preview-scroll">
+        <table id="previewTable">
+          <thead>
+            <tr>
+              <th>Case ID</th>
+              <th>Type</th>
+              <th>Title</th>
+              <th>Module</th>
+            </tr>
+          </thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnGenerate">
+        <div class="btn-spinner" id="genSpinner"></div>
+        <span id="btnGenerateIcon">⚡</span>
+        <span id="btnGenerateText">Generate Test Cases</span>
+      </button>
+      <button class="btn btn-secondary" id="btnClear" disabled>
+        🗑 Clear
+      </button>
+      <button class="btn btn-download" id="btnDownload" disabled>
+        ⬇ Download CSV
+      </button>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span class="footer-tag">TestCraft AI <span>v1.0</span></span>
+    <span class="footer-tag" id="totalCount"></span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -52,13 +52,6 @@ Steps	Numbered step-by-step instructions
 Expected Result	Pass criterion
 Post Conditions	State after test completes
 
-💡 Usage Tips
-Login pages → Best results; generates required field, email format, and auth flow tests
-Complex forms → Every field gets its own happy path + validation test
-SPAs (React/Vue) → Click "Generate" after the page fully loads and renders all elements
-Toggle scopes → Uncheck "Performance" or "Accessibility" to generate a focused functional-only run
-Re-run anytime → Click Generate again on a different page to overwrite results
-
 🔒 Permissions Used
 Permission	Reason
 activeTab	Read the current tab's URL and inject scripts
